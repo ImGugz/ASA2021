@@ -8,101 +8,135 @@
  * 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
 #include <list>
 #include <vector>
 #include <queue>
+#include <cassert>
 using namespace std;
 
-#define ler_numeros(a, b) scanf("%d %d", &a, &b);
 
+/* Notacao para um vertice em vez de usar o tipo primitivo int */
 typedef int Vertice;
 
-/* Grafo */
+/* Funcao para ler o input */
+void readInput(int * a, int * b) {
+    int temp = scanf("%d %d", a, b);
+    assert(temp == 2);
+}
 
-class Grafo {
+/* Classe do Grafo */
+class Graph {
     int numVertices;
-    list<Vertice>* listaAdj;
+    list<Vertice> *adjList;
+
 public:
-    // Constructor
-    Grafo(int V, int E);
-    void adicionarArco(int u, int v);
-    void mostrarLeK();
+    Graph(int V, int E);
+    void addEdge(int u, int v); // Adiciona arco
+    vector<Vertice> countInDegree();
+    vector<Vertice> topologicalSort(); // Devolve um vetor de vertices com ordençao topologica
+    void longestPathDAG();
+    void freeMemHeap();
 };
 
-
-Grafo::Grafo(int V, int E) {
+/* Construtor da classe Grafo lendo do input os varios arcos */
+Graph::Graph(int V, int E) {
     numVertices = V;
-    listaAdj = new list<Vertice>[V];
+    adjList = new list<Vertice>[V];
     for (int i = 0; i < E; ++i) {
         Vertice u, v;
-        ler_numeros(u, v);
-        adicionarArco(u-1, v-1);
+        readInput(&u, &v);
+        addEdge(u - 1, v - 1); // Para representacao fiel (n vertices -> [0,..,n-1])
     }
 }
 
-
-void Grafo::adicionarArco(int u, int v) {
-    listaAdj[u].push_back(v);
+/* Adiciona um arco ao grafo, de u para v */
+void Graph::addEdge(int u, int v) {
+    adjList[u].push_back(v);
 }
 
-// Algoritmo de Khan (O (V+E))
-void Grafo::mostrarLeK() {
-    int K = 0;
-    int L = 0;
-    vector<Vertice> grauEntrada(numVertices, 0);
-    vector<Vertice> ordemTopologica;
-    for (Vertice u = 0; u < numVertices; ++u) {
+/* Contar o grau de entrada para cada vertice na instancia do grafo */
+vector<Vertice> Graph::countInDegree() {
+    vector<Vertice> inDegree(numVertices, 0);
+    for (Vertice v = 0; v < numVertices; ++v) {
         list<int>::iterator it;
-        for (it = listaAdj[u].begin(); it != listaAdj[u].end(); it++) {
-            grauEntrada[*it]++;
+        for (it = adjList[v].begin(); it != adjList[v].end(); it++) {
+            inDegree[*it]++;
         }
     }
-    queue<int> fila;
+    return inDegree;
+}
+
+/* Algoritmo de Kahn para ordenacao topologica */
+/* O(V + E) */
+vector<Vertice> Graph::topologicalSort() {
+    int K = 0; // Variavel de output
+    vector<Vertice> inDegree = countInDegree();
+    vector<Vertice> topSort;
+    queue<int> queueZeroDegree;
     for (Vertice u = 0; u < numVertices; ++u) {
-        if (grauEntrada[u] == 0) {
+        if (inDegree[u] == 0) {
             K++;
-            fila.push(u);
+            queueZeroDegree.push(u);
         }
     }
-    while (!fila.empty()) {
-        Vertice u = fila.front();
-        fila.pop();
-        ordemTopologica.push_back(u);
+    /* Desbastar o grafo, removendo arestas de sources e juntando ah fila as novas sources */
+    /* NOTA: Num DAG ha sempre uma source (e um sink) */
+    while (!queueZeroDegree.empty()) {
+        Vertice u = queueZeroDegree.front();
+        queueZeroDegree.pop();
+        topSort.push_back(u);
         list<int>::iterator it;
-        for (it = listaAdj[u].begin(); it != listaAdj[u].end(); it++) {
-            if (--grauEntrada[*it] == 0) {
-                fila.push(*it);
+        for (it = adjList[u].begin(); it != adjList[u].end(); it++) {
+            if (--inDegree[*it] == 0) {
+                // Desbastar arestas e por em fila novas sources
+                queueZeroDegree.push(*it);
             }
         }
     }
-
-    vector<int> tamanhoAteVertice(numVertices, 0);
-
-    for (Vertice u = 0; u < numVertices; ++u) {
-        Vertice v = ordemTopologica[u];
-        list<int>::iterator it;
-        for (it = listaAdj[v].begin(); it != listaAdj[v].end(); ++it) {
-            if (tamanhoAteVertice[*it] <= tamanhoAteVertice[v] + 1) {
-                tamanhoAteVertice[*it] = tamanhoAteVertice[v] + 1;
-            }
-        }
-    }
-    for (Vertice u = 0; u < numVertices; ++u) {
-        if (tamanhoAteVertice[u] > L) {
-            L = tamanhoAteVertice[u];
-        }
-    }
-    L++;
-    printf("%d %d\n", K, L);
+    printf("%d ", K); // Imprimir output do K
+    return topSort;
 }
 
+/* Mumit Khan, CSE 221, April 10, 2011 */
+/* Algoritmo para encontrar o caminho mais longo dado um DAG de input */
+/* NOTA: Neste caso assume-se um peso de 1 para um DAG sem peso */
+/* O(V + E) */
+void Graph::longestPathDAG() {
+    int L = 0; // Variavel de output
+    vector<int> lengthTo(numVertices, 0);
+    vector<Vertice> topSort = topologicalSort();
+    for (Vertice u = 0; u < numVertices; ++u) {
+        Vertice v = topSort[u];
+        list<int>::iterator it;
+        for (it = adjList[v].begin(); it != adjList[v].end(); ++it) {
+            if (lengthTo[*it] <= lengthTo[v] + 1) {
+                lengthTo[*it] = lengthTo[v] + 1;
+            }
+        }
+    }
+    /* Seja p = <v1, v2, ..., vn> um caminho qualquer num grafo
+    Existem n vertices e n-1 arcos, onde o vector distanceTo armazena
+    apenas a distancia em numero de arcos pelo que eh necessario incrementar */
+    for (Vertice u = 0; u < numVertices; ++u) {
+        if (lengthTo[u] > L) {
+            L = lengthTo[u];
+        }
+    }
+    L++; // lengthTo[u] guarda o numero de arcos do path (numero de vertices no path - 1)
+    printf("%d\n", L); // Imprimir output do L
+}
+
+/* Libertar memoria alocada no heap */
+void Graph::freeMemHeap() {
+    delete[] adjList;
+}
 
 int main() {
     int numVertices, numArcos;
-    ler_numeros(numVertices, numArcos);
-    Grafo grafo(numVertices, numArcos);
-    grafo.mostrarLeK();
+    readInput(&numVertices, &numArcos);
+    Graph graph(numVertices, numArcos);
+    graph.longestPathDAG();
+    graph.freeMemHeap();
     return 0;
 }
