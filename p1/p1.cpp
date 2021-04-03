@@ -28,6 +28,7 @@ void readInput(int * a, int * b) {
 /* Classe do Grafo */
 class Graph {
     int numVertices;
+    /*Alteracoes eventualmente substituir listas por vetores por performance > memoria*/
     list<Vertice>* adjList;
     int * inDegree;
 
@@ -103,6 +104,9 @@ void Graph::longestPathDAG() {
             if (lengthTo[*it] <= lengthTo[v] + 1) {
                 lengthTo[*it] = lengthTo[v] + 1;
             }
+            /*Alteracoes (para remover o loop abaixo)
+            if(lengthTo[*it] > L)
+                L = lengthTo[*it]; */
         }
     }
     /* Seja p = <v1, v2, ..., vn> um caminho qualquer num grafo
@@ -128,6 +132,7 @@ int main() {
     readInput(&numVertices, &numArcos);
     Graph graph(numVertices, numArcos);
     graph.longestPathDAG();
+    /*Alteracoes printf a parte, em vez de estar repartido por funcoes*/
     graph.freeMemHeap();
     return 0;
 }
