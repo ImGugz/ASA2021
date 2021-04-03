@@ -120,6 +120,7 @@ void Graph::longestPathDAG() {
 /* Libertar memoria alocada no heap */
 void Graph::freeMemHeap() {
     delete[] adjList;
+    delete[] inDegree;
 }
 
 int main() {
