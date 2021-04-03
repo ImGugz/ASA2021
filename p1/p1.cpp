@@ -28,7 +28,8 @@ void readInput(int * a, int * b) {
 /* Classe do Grafo */
 class Graph {
     int numVertices;
-    list<Vertice> *adjList;
+    list<Vertice>* adjList;
+    int * inDegree;
 
 public:
     Graph(int V, int E);
@@ -43,6 +44,7 @@ public:
 Graph::Graph(int V, int E) {
     numVertices = V;
     adjList = new list<Vertice>[V];
+    inDegree = new int[V];
     for (int i = 0; i < E; ++i) {
         Vertice u, v;
         readInput(&u, &v);
@@ -53,25 +55,13 @@ Graph::Graph(int V, int E) {
 /* Adiciona um arco ao grafo, de u para v */
 void Graph::addEdge(int u, int v) {
     adjList[u].push_back(v);
-}
-
-/* Contar o grau de entrada para cada vertice na instancia do grafo */
-vector<Vertice> Graph::countInDegree() {
-    vector<Vertice> inDegree(numVertices, 0);
-    for (Vertice v = 0; v < numVertices; ++v) {
-        list<int>::iterator it;
-        for (it = adjList[v].begin(); it != adjList[v].end(); it++) {
-            inDegree[*it]++;
-        }
-    }
-    return inDegree;
+    inDegree[v]++;
 }
 
 /* Algoritmo de Kahn para ordenacao topologica */
 /* O(V + E) */
 vector<Vertice> Graph::topologicalSort() {
     int K = 0; // Variavel de output
-    vector<Vertice> inDegree = countInDegree();
     vector<Vertice> topSort;
     queue<int> queueZeroDegree;
     for (Vertice u = 0; u < numVertices; ++u) {
