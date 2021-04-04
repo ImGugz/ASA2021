@@ -15,7 +15,6 @@
 #include <cassert>
 using namespace std;
 
-
 /* Notacao para um vertice em vez de usar o tipo primitivo int */
 typedef int Vertice;
 
@@ -28,8 +27,7 @@ void readInput(int * a, int * b) {
 /* Classe do Grafo */
 class Graph {
     int numVertices;
-    /*Alteracoes eventualmente substituir listas por vetores por performance > memoria*/
-    list<Vertice>* adjList;
+    vector<Vertice> * adjList;
     int * inDegree;
 
 public:
@@ -44,8 +42,8 @@ public:
 /* Construtor da classe Grafo lendo do input os varios arcos */
 Graph::Graph(int V, int E) {
     numVertices = V;
-    adjList = new list<Vertice>[V];
-    inDegree = new int[V];
+    adjList = new vector<Vertice>[V];
+    inDegree = new int[V]();
     for (int i = 0; i < E; ++i) {
         Vertice u, v;
         readInput(&u, &v);
@@ -77,11 +75,10 @@ vector<Vertice> Graph::topologicalSort() {
         Vertice u = queueZeroDegree.front();
         queueZeroDegree.pop();
         topSort.push_back(u);
-        list<int>::iterator it;
-        for (it = adjList[u].begin(); it != adjList[u].end(); it++) {
-            if (--inDegree[*it] == 0) {
-                // Desbastar arestas e por em fila novas sources
-                queueZeroDegree.push(*it);
+        for (size_t i = 0; i < adjList[u].size(); ++i) {
+            Vertice adj = adjList[u][i];
+            if (--inDegree[adj] == 0) {
+                queueZeroDegree.push(adj);
             }
         }
     }
@@ -99,24 +96,19 @@ void Graph::longestPathDAG() {
     vector<Vertice> topSort = topologicalSort();
     for (Vertice u = 0; u < numVertices; ++u) {
         Vertice v = topSort[u];
-        list<int>::iterator it;
-        for (it = adjList[v].begin(); it != adjList[v].end(); ++it) {
-            if (lengthTo[*it] <= lengthTo[v] + 1) {
-                lengthTo[*it] = lengthTo[v] + 1;
+        for (size_t i = 0; i < adjList[v].size(); ++i) {
+            Vertice w = adjList[v][i];
+            if (lengthTo[w] <= lengthTo[v] + 1) {
+                lengthTo[w] = lengthTo[v] + 1;
             }
-            /*Alteracoes (para remover o loop abaixo)
-            if(lengthTo[*it] > L)
-                L = lengthTo[*it]; */
+            if (lengthTo[w] > L) {
+                L = lengthTo[w];
+            }
         }
     }
     /* Seja p = <v1, v2, ..., vn> um caminho qualquer num grafo
     Existem n vertices e n-1 arcos, onde o vector distanceTo armazena
     apenas a distancia em numero de arcos pelo que eh necessario incrementar */
-    for (Vertice u = 0; u < numVertices; ++u) {
-        if (lengthTo[u] > L) {
-            L = lengthTo[u];
-        }
-    }
     L++; // lengthTo[u] guarda o numero de arcos do path (numero de vertices no path - 1)
     printf("%d\n", L); // Imprimir output do L
 }
