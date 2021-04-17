@@ -40,22 +40,22 @@ A solução visada para a resolução dos problemas apresentados consiste em 3 e
 
 Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de um ciclo a depender linearmente de E, i.e., $O(E)$.
 
-Para (\underline{2}) - ordenar topologicamente o \emph{DAG} - percorrer os vértices do \emph{DAG} adicionando a uma \emph{stack} os de grau de entrada zero. Para cada um desses adicioná-lo à ordenação topológica e visitar os seus adjacentes; decrementar em 1 valor o grau de entrada dos adjacentes (remover o arco do \emph{DAG}) e adicioná-los à \emph{stack} se ficarem com grau de entrada 0. Repetir o processo para cada vértice na stack. Logo, $O(V+E)$.
+Para (\underline{2}) - ordenar topologicamente o \emph{DAG} - percorrer os vértices do \emph{DAG} adicionando a uma \emph{stack} os de grau de entrada zero. Para cada um desses adicioná-lo à ordenação topológica e visitar os seus adjacentes; decrementar em 1 valor o grau de entrada dos adjacentes (remover o arco do \emph{DAG}) e adicioná-los à \emph{stack} se ficarem com grau de entrada 0. Repetir o processo para cada vértice na stack. Logo, $O(V) + O(V+E) = O(2V+E) = O(V+E)$.
 
 Para (\underline{3}) - encontrar o maior caminho do \emph{DAG} - para cada vértice $v$ $\in{V}$ em ordenação linear calcular dist($v$)=$max_{(u,v)\in{E}}$\{dist($u$)+1\} e devolver $max_{(v)\in{V}}$\{dist($v$)\}, onde dist($v$) representa a maior distância entre uma fonte do \emph{DAG} ao vértice $v$. Logo, $O(V+E)+O(V+E) = O(2V+2E) = O(V+E)$.
 
-Conclui-se que a complexidade geral da solução aos problemas é dada por $O(E)+O(V+E)+O(V+E) = O(2V+3E) = \textbf{O(V+E)}$.
+Conclui-se que a complexidade geral da solução aos problemas é dada por $O(E)+O(V)+O(V+E)+O(V+E) = O(3V+3E) = \textbf{O(V+E)}$.
 
 \section{Avaliação Experimental dos Resultados}
 Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{Intel Core i5 Quad-Core} a \SI{1,4}{GHz}, com \SI{8}{GB} de memória RAM, com o sistema operativo \emph{macOS Big Sur}.
 
-Utilizou-se a ferramenta \texttt{randomDAG} fornecida pelo corpo docente da unidade curricular de ASA para gerar \emph{DAGs} de tamanho variável até à ordem de grandeza de $10^6$, com probabilidade de densidade de arco $p=0.4$, bem como a chamada de sistema \texttt{time} com o intuito de cronometrar o desempenho do algoritmo implementado dado \emph{DAGs} de \emph{input} gerados pelo \texttt{randomDAG}.
+Utilizou-se a ferramenta \texttt{randomDAG} fornecida pelo corpo docente para gerar \emph{DAGs} de tamanho variável até à ordem de grandeza de $10^6$, com probabilidade de densidade de arco $p=0.4$, bem como a chamada de sistema \texttt{time} com o intuito de cronometrar o desempenho do algoritmo implementado dado \emph{DAGs} de \emph{input} gerados pelo \texttt{randomDAG}.
 
 \begin{center}
 \includegraphics[width=\linewidth]{reglinear.png}
 \end{center}	
 
-Por fim, utilizou-se a ferramenta \emph{Microsoft Excel}, registando-se os valores obtidos da testagem e  ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente, vendo que o tempo de execução tem uma relação linear com o tamanho do grafo - $\textbf{O(V+E)}$.
+Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente, vendo que o tempo de execução tem uma relação linear com o tamanho do grafo - $\textbf{O(V+E)}$.
 
 
 \end{document}
