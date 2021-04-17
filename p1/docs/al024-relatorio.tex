@@ -12,8 +12,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \author{
-	António Coelho (ist195535)\\
-	Gustavo Aguiar (ist195587)
+	Grupo: al024\\Alunos: António Coelho (ist195535) e Gustavo Aguiar (ist195587)
 }
 \title{Relatório 1º Projeto ASA 2020/2021}
 \date{}
@@ -27,7 +26,7 @@
 \begin{document}
 \maketitle
 \section{Descrição do Problema e da Solução}
-O problema foi interpretado como um de grafos (em específico um \emph{DAG}), em que as peças de dominós correspondem a vértices e as dependências entre os mesmos a arcos. Concluiu-se que o número de intervenções necessárias para garantir que todas as peças caiam é dado pelo menor número de vértices a partir dos quais se pode percorrer todo o grafo, bem como se determinou que o tamanho da maior sequência de peças a caírem representa o número de vértices no maior caminho do \emph{DAG}.
+O problema foi interpretado como um de grafos (em específico um \emph{DAG}), em que as peças de dominós correspondem a vértices e as dependências entre os mesmos a arcos. Concluiu-se que o número de intervenções necessárias para garantir que todas as peças caiam é dado pelo menor número de vértices a partir dos quais se pode percorrer todo o grafo, i.e., a quantidade de fontes\footnote{Uma fonte é um vértice com grau de entrada zero.} no DAG. Do mesmo modo, determinou-se que o tamanho da maior sequência de peças a caírem representa o número de vértices no caminho mais longo do \emph{DAG}.
 Assim, como auxílio de resolução dos problemas encontrados utilizaram-se as seguintes referências:
 \begin{itemize}
 \item\href{https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/}{Algoritmo de Kahn para ordenação topológica}
@@ -43,7 +42,7 @@ Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os d
 
 Para (\underline{2}) - ordenar topologicamente o \emph{DAG} - percorrer os vértices do \emph{DAG} adicionando a uma \emph{stack} os de grau de entrada zero. Para cada um desses adicioná-lo à ordenação topológica e visitar os seus adjacentes; decrementar em 1 valor o grau de entrada dos adjacentes (remover o arco do \emph{DAG}) e adicioná-los à \emph{stack} se ficarem com grau de entrada 0. Repetir o processo para cada vértice na stack. Logo, $O(V+E)$.
 
-Para (\underline{3}) - encontrar o maior caminho do \emph{DAG} - para cada vértice $v$ $\in{V}$ em ordenação linear calcular dist($v$)=$max_{(u,v)\in{E}}$\{dist($u$)+1\} e devolver $max_{(v)\in{V}}$\{dist($v$)\}, onde dist($v$) representa a maior distância entre uma fonte\footnote{Uma fonte é um vértice com grau de entrada zero.} do \emph{DAG} ao vértice $v$. Logo, $O(V+E)+O(V+E) = O(2V+2E) = O(V+E)$.
+Para (\underline{3}) - encontrar o maior caminho do \emph{DAG} - para cada vértice $v$ $\in{V}$ em ordenação linear calcular dist($v$)=$max_{(u,v)\in{E}}$\{dist($u$)+1\} e devolver $max_{(v)\in{V}}$\{dist($v$)\}, onde dist($v$) representa a maior distância entre uma fonte do \emph{DAG} ao vértice $v$. Logo, $O(V+E)+O(V+E) = O(2V+2E) = O(V+E)$.
 
 Conclui-se que a complexidade geral da solução aos problemas é dada por $O(E)+O(V+E)+O(V+E) = O(2V+3E) = \textbf{O(V+E)}$.
 
@@ -56,7 +55,7 @@ Utilizou-se a ferramenta \texttt{randomDAG} fornecida pelo corpo docente da unid
 \includegraphics[width=\linewidth]{reglinear.png}
 \end{center}	
 
-Por fim, utilizou-se a ferramenta \emph{Microsoft Excel}, registando-se os valores obtidos da testagem e, usando o Método dos Mínimos Quadrados, ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente, vendo que o tempo de execução tem uma relação linear com o tamanho do grafo - $O(V+E)$.
+Por fim, utilizou-se a ferramenta \emph{Microsoft Excel}, registando-se os valores obtidos da testagem e  ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente, vendo que o tempo de execução tem uma relação linear com o tamanho do grafo - $\textbf{O(V+E)}$.
 
 
 \end{document}
