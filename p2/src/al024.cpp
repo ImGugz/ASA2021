@@ -92,7 +92,7 @@ public:
         return false;
     }
 
-    int fordFulkerson() {
+    int edmondsKarp() {
         Vertice precedentes[numVertices];
         int fluxoMax = 0;
         while (BFS(precedentes)) {
@@ -129,10 +129,6 @@ int main() {
         g.adicionarCustoProcessos(pi, pj, cij);
     }
 
-    cout << g.fordFulkerson() << "\n";
+    cout << g.edmondsKarp() << "\n";
 
 }
-
-\begin{center}
-\includegraphics[width=\linewidth]{reglinear.png}
-\end{center}
