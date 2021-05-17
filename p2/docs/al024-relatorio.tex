@@ -7,6 +7,7 @@
 \usepackage{indentfirst}
 \usepackage[pdftex]{graphicx}
 \usepackage{siunitx}
+\usepackage{pgfplots}
 
 \urlstyle{same}
 \pagestyle{fancy}
@@ -23,6 +24,7 @@
     urlcolor=cyan,
 }
 \fancyfoot[C]{\thepage}
+\pgfplotsset{compat = newest}
 
 \begin{document}
 \maketitle
@@ -41,21 +43,43 @@ Assim, como auxílio de resolução dos problemas encontrados utilizaram-se as s
 
 A solução visada para a resolução dos problemas apresentados consiste em 2 etapas: ler a rede de fluxo de \emph{input} (\underline{1}) e computar o fluxo máximo com recurso ao algoritmo de \emph{Edmonds-Karp}(\underline{2}).
 
-Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O(V) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$) = O(V$^2$) para o segundo.
+Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O(V) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$)$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$ = O(V$^2$) para o segundo.
 
-Para (\underline{2}) - aplicar o algoritmo de \emph{Edmonds-Karp} na rede de fluxo - enquanto houver caminhos de aumento (o que se verifica em O($VE$) vezes) aplica-se a \emph{BFS}(O(V$^2$), uma vez que se trata de uma matriz de adjacências) para encontrar entre esses o mais curto em número de arcos - distância de \emph{Edmonds-Karp} mínima. Existindo um, determina-se a sua capacidade crítica por \emph{backtrack} (que é O(V)) e o fluxo máximo é incrementado esse valor. No total tem-se O(VE(V$^2$+V)) = O(EV$^3$).
-
-Por fim, como a complexidade de (\underline{2}) domina a de (\underline{1}), tem-se que a solução geral aos problemas apresentados $\in{\textbf{O(EV$^3$)}}$.
+Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede de fluxo – enquanto houver caminhos de aumento aplica-se a \emph{BFS} e de seguida faz-se um \emph{backtrack} para calcular a capacidade crítica\footnote{Capacidade crítica de um caminho de aumento é a capacidade mínima de um arco na rede residual que conste nesse mesmo caminho.} desses. O número de caminhos $\in{\left|f^{*}\right|}$. Porém, como no contexto do problema $\left|f^{*}\right|$ $\in{O(V)}$, que é um limite mais apertado, tem-se que esta etapa é O(V). A BFS, por outro lado, devido à representação da rede residual sob matriz, corre em O(V$^2$). Por fim, o backtrack é O(V), de modo que a complexidade total de (\underline{2}) é O(V(V$^2$+V)) = O(V$^3$).
+Por fim, como a complexidade de (\underline{2}) domina a de (\underline{1}), tem-se que a solução geral aos problemas apresentados $\in{\textbf{O(V$^3$)}}$.
 
 \section{Avaliação Experimental dos Resultados}
 Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{Intel Core i5 Quad-Core} a \SI{1,4}{GHz}, com \SI{8}{GB} de memória RAM, com o sistema operativo \emph{macOS Big Sur}.
 
-Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para gerar redes de fluxo com capacidade por arco não superior a 15 – mostra-se irrelevante utilizar capacidades muitos superiores uma vez que a solução apresentada tem complexidade independente desse valor - e número de vértices entre 102 e 1602 aumentando de 100 em 100, perfazendo um tamanho de grafo até à ordem de grandeza $10^6$. Com o intuito de cronometrar o desempenho do algoritmo implementado utilizou-se a chamada de sistema \texttt{time} para o programa a correr sobre as tais redes geradas.
-
+Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para gerar redes de fluxo com capacidade por arco até 15 – mostra-se irrelevante utilizar capacidades superiores uma vez que a solução apresentada tem complexidade independente desse valor - e número de vértices entre 102 e 1602 aumentando de 100 em 100, perfazendo um tamanho de grafo até à ordem de grandeza $10^6$. Com o intuito de cronometrar o desempenho do algoritmo implementado utilizou-se a chamada de sistema \texttt{time} para o programa a correr sobre as redes geradas.
+\pgfplotstableread{tempos.dat}{\table}
 \begin{center}
-\includegraphics[width=\linewidth]{reglinear.png}
+\begin{tikzpicture}[trim left = 0cm]
+\begin{axis}[
+    xmin = 0, xmax = 4.2E+9,
+    ymin = 0, ymax = 3000,
+    xtick distance = 1E+9,
+    ytick distance = 500,
+    grid = both,
+    minor tick num = 1,
+    major grid style = {lightgray},
+    minor grid style = {lightgray!25},
+    width = \textwidth,
+    height = 0.65\textwidth,
+    xlabel = {V$^3$},
+    ylabel = {Tempo de execução (ms)},
+    legend cell align = {left},
+    legend pos = north west
+]
+
+\addplot[blue, mark = *] table [x = {V3}, y = {T}] {\table};
+\legend{
+    V$^3$ com o tempo, 
+}
+\end{axis}
+\end{tikzpicture}
 \end{center}
 
-Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão polinomial de ordem 3 que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente. Como $\left|E\right|$ $\gg$ $\left|V\right|$, vemos que o tempo de execução está proximamemente relacionado com $\left|V^3\right|$, pelo que podemos concluir que o tempo de execução está proximamente relacionado com  $\textbf{O(EV$^3$)}$.
+Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(V$^3$)}$.
 
 \end{document}

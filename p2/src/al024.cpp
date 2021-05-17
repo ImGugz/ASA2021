@@ -132,3 +132,7 @@ int main() {
     cout << g.fordFulkerson() << "\n";
 
 }
+
+\begin{center}
+\includegraphics[width=\linewidth]{reglinear.png}
+\end{center}
