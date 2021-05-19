@@ -82,7 +82,7 @@ public:
         queue<Vertice> fila;
         fila.push(s);
         visitados[s] = true;
-        precedentes[s] = -1; // s é a source de tudo
+        precedentes[s] = -1; // todos os caminhos de aumento s-t claramente começam em s
         while (!fila.empty()) {
             Vertice u = fila.front(); fila.pop();
             for (size_t i = 0; i < listaAdj[u].size(); ++i) {
@@ -123,18 +123,18 @@ public:
 
 int main() {
     int n, k;
-    readInput(&n, &k, NULL);
+    lerInput(&n, &k, NULL);
     Grafo g(n+2); // n processos + 2 processadores
 
     for (int i = 0; i < n; ++i) { // O(n) = O(V)
         int pix, piy;
-        readInput(&pix, &piy, NULL);
+        lerInput(&pix, &piy, NULL);
         g.adicionarCustoProcessadores(i+1, pix, piy);
     }
 
     for (int i = 0; i < k; ++i) { // O(k) = O(V^2)
         int pi, pj, cij;
-        readInput(&pi, &pj, &cij);
+        lerInput(&pi, &pj, &cij);
         g.adicionarCustoProcessos(pi, pj, cij);
     }
 
