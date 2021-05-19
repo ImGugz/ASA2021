@@ -39,14 +39,13 @@ Assim, como auxílio de resolução dos problemas encontrados utilizaram-se as s
 \end{itemize}
  
  \section{Análise Teórica}
- A representação da rede residual em memória foi feita com recurso a uma matriz de adjacências - complexidade de espaço $\Theta{(V^2)}$ - justificada pela bidirecionalidade dos arcos correspondentes aos custos inter-processos e pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo.
+ A representação da rede residual em memória foi feita com recurso a uma matriz de capacidades residuais e a uma lista de adjacências - complexidade de espaço $\Theta{(V^2)}$ e $\Theta{(V+E)}$ - justificada pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo e por um custo O(E) na \emph{BFS}, respetivamente.
 
 A solução visada para a resolução dos problemas apresentados consiste em 2 etapas: ler a rede de fluxo de \emph{input} (\underline{1}) e computar o fluxo máximo com recurso ao algoritmo de \emph{Edmonds-Karp}(\underline{2}).
 
 Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O(V) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$)$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$ = O(V$^2$) para o segundo.
 
-Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede de fluxo – enquanto houver caminhos de aumento aplica-se a \emph{BFS} e de seguida faz-se um \emph{backtrack} para calcular a capacidade crítica\footnote{Capacidade crítica de um caminho de aumento é a capacidade mínima de um arco na rede residual que conste nesse mesmo caminho.} desses. O número de caminhos $\in{\left|f^{*}\right|}$. Porém, como no contexto do problema $\left|f^{*}\right|$ $\in{O(V)}$, que é um limite mais apertado, tem-se que esta etapa é O(V). A BFS, por outro lado, devido à representação da rede residual sob matriz, corre em O(V$^2$). Por fim, o backtrack é O(V), de modo que a complexidade total de (\underline{2}) é O(V(V$^2$+V)) = O(V$^3$).
-Por fim, como a complexidade de (\underline{2}) domina a de (\underline{1}), tem-se que a solução geral aos problemas apresentados $\in{\textbf{O(V$^3$)}}$.
+Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede de fluxo – enquanto houver caminhos de aumento aplica-se a \emph{BFS}, que corre em O(E). É sabido que o número de iterações de \emph{Edmonds-Karp}, i.e., o número total de aumentos de fluxo é O(VE) - existem O(E) pares de vértices que, para um arco (u, v), ficam críticos O(V) vezes, o que perfaz uma complexidade total de O(E$\times{EV}$) = O(E$^2$V). Contudo, mediante uma análise mais detalhada, notamos que o algoritmo de \emph{Edmonds-Karp} $\in{O(\left|f^{*}\right|E)}$ (e $\in{O(E^2V)}$), e de acordo com o enunciado $\left|f^{*}\right|$ $\in{O(V)}$, pelo que conseguimos apertar o limite assimptótico de (\underline{2}) para $O(\left|f^{*}\right|E)$ $\in{O(VE)}$. Concluímos assim que a solução geral dos problemas apresentados $\in{\textbf{O(VE)}}$.
 
 \section{Avaliação Experimental dos Resultados}
 Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{Intel Core i5 Quad-Core} a \SI{1,4}{GHz}, com \SI{8}{GB} de memória RAM, com o sistema operativo \emph{macOS Big Sur}.
@@ -56,7 +55,7 @@ Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para ge
 \begin{center}
 \begin{tikzpicture}[trim left = 0cm]
 \begin{axis}[
-    xmin = 0, xmax = 4.2E+9,
+    xmin = 0, xmax = 1.7E+9,
     ymin = 0, ymax = 3000,
     xtick distance = 1E+9,
     ytick distance = 500,
@@ -66,20 +65,20 @@ Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para ge
     minor grid style = {lightgray!25},
     width = \textwidth,
     height = 0.65\textwidth,
-    xlabel = {V$^3$},
+    xlabel = {VE},
     ylabel = {Tempo de execução (ms)},
     legend cell align = {left},
     legend pos = north west
 ]
 
-\addplot[blue, mark = *] table [x = {V3}, y = {T}] {\table};
+\addplot[blue, mark = *] table [x = {VE}, y = {T}] {\table};
 \legend{
-    V$^3$ com o tempo, 
+    VE com o tempo, 
 }
 \end{axis}
 \end{tikzpicture}
 \end{center}
 
-Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(V$^3$)}$.
+Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear com $VE$ nas abcissas e o tempo (em ms) nas ordenadas que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(VE)}$.
 
 \end{document}
