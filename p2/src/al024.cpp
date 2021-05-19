@@ -18,7 +18,7 @@ using namespace std;
 
 typedef int Vertice;
 
-void readInput(int * a, int * b, int * c) {
+void lerInput(int * a, int * b, int * c) {
     if (c == NULL) {
         int temp = scanf("%d %d", a, b);
         assert(temp == 2);
@@ -30,43 +30,51 @@ void readInput(int * a, int * b, int * c) {
 
 class Grafo {
     int numVertices;
-    Vertice ** matrizAdjRes; // representação em matriz de adjacências
+    vector<Vertice> * listaAdj; // lista de adjacências da rede de fluxo
+    int ** matrizCapRes; // capacidades de arcos na rede residual
     int s, t; // fonte e sumidouro
 public:
     Grafo(int V) {
-        this->numVertices = V;
-        matrizAdjRes = new int*[V];
+        numVertices = V;
+        listaAdj = new vector<Vertice>[V];
+        matrizCapRes = new int*[V];
         s = 0; 
         t = V-1;
         for (int i = 0; i < numVertices; ++i) { // inicialização a 0
-            matrizAdjRes[i] = new int[V];
+            matrizCapRes[i] = new int[V];
             for (int j = 0; j < numVertices; ++j) {
-                matrizAdjRes[i][j] = 0;
+                matrizCapRes[i][j] = 0;
             }
         }
     }
 
-    void adicionarCustoProcessos(Vertice u, Vertice v, int custo) {
-        // simetria de custo inter-processos
-        matrizAdjRes[u][v] = custo;
-        matrizAdjRes[v][u] = custo;
+    void adicionarCustoProcessadores(Vertice u, int custox, int custoy) {
+        listaAdj[s].push_back(u);
+        listaAdj[u].push_back(t);
+        // processador X é source e Y sink
+        matrizCapRes[s][u] = custox;
+        matrizCapRes[u][t] = custoy;
     }
 
-    void adicionarCustoProcessadores(Vertice u, int custox, int custoy) {
-        // processador X é source e Y sink
-        matrizAdjRes[s][u] = custox;
-        matrizAdjRes[u][t] = custoy;
+    void adicionarCustoProcessos(Vertice u, Vertice v, int custo) {
+        // arcos bidirecionais
+        listaAdj[u].push_back(v);
+        listaAdj[v].push_back(u);
+        // simetria de custo inter-processos
+        matrizCapRes[u][v] = custo;
+        matrizCapRes[v][u] = custo;
     }
 
     ~Grafo() {
         // libertar espaço na heap
         for (int i = 0; i < numVertices; ++i) {
-            delete[] matrizAdjRes[i];
+            delete[] matrizCapRes[i];
         }
-        delete[] matrizAdjRes;
+        delete[] matrizCapRes;
+        delete[] listaAdj;
     }
     
-    bool BFS(Vertice precedentes[]) {
+    bool BFS(Vertice precedentes[]) { // O(E) pois E >> V nestas redes
         bool visitados[numVertices]; // guarda vertices visitados no caminho de aumento
         for (int i = 0; i < numVertices; ++i) {
             visitados[i] = false;
@@ -74,11 +82,12 @@ public:
         queue<Vertice> fila;
         fila.push(s);
         visitados[s] = true;
-        precedentes[s] = -1;
+        precedentes[s] = -1; // s é a source de tudo
         while (!fila.empty()) {
             Vertice u = fila.front(); fila.pop();
-            for (Vertice v = 0; v < numVertices; ++v) {
-                if (visitados[v] == false && matrizAdjRes[u][v] > 0) {
+            for (size_t i = 0; i < listaAdj[u].size(); ++i) {
+                Vertice v = listaAdj[u][i];
+                if (visitados[v] == false && matrizCapRes[u][v] > 0) {
                     if (v == t) {
                         precedentes[v] = u;
                         return true;
@@ -99,12 +108,12 @@ public:
             int fluxoCaminho = numeric_limits<int>::max(); // +inf
             for (Vertice v = t; v != s; v = precedentes[v]) {
                 Vertice u = precedentes[v];
-                fluxoCaminho = min(fluxoCaminho, matrizAdjRes[u][v]);
+                fluxoCaminho = min(fluxoCaminho, matrizCapRes[u][v]);
             }
             for (Vertice v = t; v != s; v = precedentes[v]) {
                 Vertice u = precedentes[v];
-                matrizAdjRes[u][v] -= fluxoCaminho;
-                matrizAdjRes[v][u] += fluxoCaminho;
+                matrizCapRes[u][v] -= fluxoCaminho;
+                matrizCapRes[v][u] += fluxoCaminho;
             }
             fluxoMax += fluxoCaminho;
         }
@@ -115,15 +124,15 @@ public:
 int main() {
     int n, k;
     readInput(&n, &k, NULL);
-    Grafo g(n+2); // adicionar fonte e sumidouro
+    Grafo g(n+2); // n processos + 2 processadores
 
-    for (int i = 0; i < n; ++i) { // O(n)
+    for (int i = 0; i < n; ++i) { // O(n) = O(V)
         int pix, piy;
         readInput(&pix, &piy, NULL);
         g.adicionarCustoProcessadores(i+1, pix, piy);
     }
 
-    for (int i = 0; i < k; ++i) { // O(k)
+    for (int i = 0; i < k; ++i) { // O(k) = O(V^2)
         int pi, pj, cij;
         readInput(&pi, &pj, &cij);
         g.adicionarCustoProcessos(pi, pj, cij);
