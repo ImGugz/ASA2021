@@ -39,32 +39,32 @@ Assim, como auxílio de resolução dos problemas encontrados utilizaram-se as s
 \end{itemize}
  
  \section{Análise Teórica}
- A representação da rede residual em memória foi feita com recurso a uma matriz de capacidades residuais e a uma lista de adjacências - complexidade de espaço $\Theta{(V^2)}$ e $\Theta{(V+E)}$ - justificada pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo e por um custo O(E) na \emph{BFS}, respetivamente.
+ A representação da rede residual em memória foi feita com recurso a uma matriz de capacidades residuais e a uma lista de adjacências - complexidade de espaço $\Theta{(V^2)}$ e $\Theta{(V+E)}$ - justificada pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo e por um custo O($E$) na \emph{BFS}, respetivamente.
 
 A solução visada para a resolução dos problemas apresentados consiste em 2 etapas: ler a rede de fluxo de \emph{input} (\underline{1}) e computar o fluxo máximo com recurso ao algoritmo de \emph{Edmonds-Karp}(\underline{2}).
 
-Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O(V) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$)$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$ = O(V$^2$) para o segundo.
+Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O($V$) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$) = O($V^2$) para o segundo$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$.
 
-Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede de fluxo – enquanto houver caminhos de aumento aplica-se a \emph{BFS}, que corre em O(E). É sabido que o número de iterações de \emph{Edmonds-Karp}, i.e., o número total de aumentos de fluxo é O(VE) - existem O(E) pares de vértices que, para um arco (u, v), ficam críticos O(V) vezes, o que perfaz uma complexidade total de O(E$\times{EV}$) = O(E$^2$V). Contudo, mediante uma análise mais detalhada, notamos que o algoritmo de \emph{Edmonds-Karp} $\in{O(\left|f^{*}\right|E)}$ (e $\in{O(E^2V)}$), e de acordo com o enunciado $\left|f^{*}\right|$ $\in{O(V)}$, pelo que conseguimos apertar o limite assimptótico de (\underline{2}) para $O(\left|f^{*}\right|E)$ $\in{O(VE)}$. Concluímos assim que a solução geral dos problemas apresentados $\in{\textbf{O(VE)}}$.
+Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede residual – enquanto houver caminhos de aumento aplica-se a \emph{BFS}$\footnote{Na rede de fluxo do contexto do problema, \left|E\right|\gg{\left|V\right|}.}$, que corre em O($E$). É sabido que o número de iterações de \emph{Edmonds-Karp}, i.e., o número total de aumentos de fluxo é O($VE$) - existem O($E$) pares de vértices que, para um arco ($u$, $v$), ficam críticos O($V$) vezes, o que perfaz uma complexidade total de O($E$)\times O($EV$) = O($E^2V$). Contudo, mediante uma análise mais detalhada, notamos que o algoritmo de \emph{Edmonds-Karp} $\in{O(\left|f^{*}\right|E)}$ (e $\in{O(E^2V)}$), e de acordo com o enunciado $\left|f^{*}\right|$ $\in{O(V)}$, pelo que conseguimos apertar o limite assimptótico de (\underline{2}) para $O(\left|f^{*}\right|E)$ $\in{O(VE)}$. Concluímos assim que a solução geral dos problemas apresentados $\in{\textbf{O(VE)}}$.
 
 \section{Avaliação Experimental dos Resultados}
-Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{Intel Core i5 Quad-Core} a \SI{1,4}{GHz}, com \SI{8}{GB} de memória RAM, com o sistema operativo \emph{macOS Big Sur}.
+Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{AMD Ryzen 5 5600X 6-Core} a \SI{3,7}{GHz}, \SI{16}{GB} de memória RAM e sistema operativo \emph{Windows 10}.
 
-Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para gerar redes de fluxo com capacidade por arco até 15 – mostra-se irrelevante utilizar capacidades superiores uma vez que a solução apresentada tem complexidade independente desse valor - e número de vértices entre 102 e 1602 aumentando de 100 em 100, perfazendo um tamanho de grafo até à ordem de grandeza $10^6$. Com o intuito de cronometrar o desempenho do algoritmo implementado utilizou-se a chamada de sistema \texttt{time} para o programa a correr sobre as redes geradas.
-\pgfplotstableread{tempos.dat}{\table}
+Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para gerar redes de fluxo com capacidade por arco até 15 – mostra-se irrelevante utilizar capacidades superiores uma vez que a solução apresentada tem complexidade independente desse valor - e número de vértices entre 102 e 1602 aumentando de 100 em 100, perfazendo um tamanho de grafo\footnote{Tamanho do grafo é dado por \href{https://bit.ly/3gfDEJJ}{$\left|V\right|+\left|E\right|$}.} até à ordem de grandeza $10^6$. Com o intuito de cronometrar o desempenho do algoritmo implementado utilizou-se a chamada de sistema \texttt{time} sobre o programa a correr nas redes geradas.
+\pgfplotstableread{times.dat}{\table}
 \begin{center}
 \begin{tikzpicture}[trim left = 0cm]
 \begin{axis}[
     xmin = 0, xmax = 1.7E+9,
-    ymin = 0, ymax = 3000,
+    ymin = 0, ymax = 1200,
     xtick distance = 1E+9,
-    ytick distance = 500,
+    ytick distance = 250,
     grid = both,
     minor tick num = 1,
     major grid style = {lightgray},
     minor grid style = {lightgray!25},
     width = \textwidth,
-    height = 0.65\textwidth,
+    height = 0.55\textwidth,
     xlabel = {VE},
     ylabel = {Tempo de execução (ms)},
     legend cell align = {left},
@@ -79,6 +79,6 @@ Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para ge
 \end{tikzpicture}
 \end{center}
 
-Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear com $VE$ nas abcissas e o tempo (em ms) nas ordenadas que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(VE)}$.
+Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear com $VE$ no eixo das abcissas, $x$, e o tempo (em ms) no eixo das ordenadas, $y$, que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(VE)}$.
 
 \end{document}
