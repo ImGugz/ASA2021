@@ -8,6 +8,8 @@
  * 
  */
 
+// Compiçação: g++ -O3 -Wall -o al024 al024.cpp -lm
+
 #include <iostream>
 #include <vector>
 #include <queue>

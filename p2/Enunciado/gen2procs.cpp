@@ -6,6 +6,8 @@
  * Pedro T. Monteiro - Pedro.Tiago.Monteiro@tecnico.ulisboa.pt
  *************************************************************/
 
+// Compilação: g++ -O3 -Wall -o gen2procs gen2procs.cpp -lm
+
 #include <cmath>
 #include <iostream>
 #include <vector>
