@@ -38,14 +38,14 @@ Assim, como auxílio de resolução dos problemas encontrados utilizaram-se as s
 \item\href{https://www.geeksforgeeks.org/ford-fulkerson-algorithm-for-maximum-flow-problem/}{Implementação do algoritmo de \emph{Edmonds-Karp} para determinar o fluxo máximo}
 \end{itemize}
  
- \section{Análise Teórica}
- A representação da rede residual em memória foi feita com recurso a uma matriz de capacidades residuais e a uma lista de adjacências - complexidade de espaço $\Theta{(V^2)}$ e $\Theta{(V+E)}$ - justificada pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo e por um custo O($E$) na \emph{BFS}, respetivamente.
+\section{Análise Teórica}
+A representação da rede residual em memória foi feita com recurso a uma matriz de capacidades residuais e a uma lista de adjacências - complexidade de espaço $O(n^2)$ e $O(n + k)$ - justificada pelo acesso O(1) às capacidades dos arcos na rede residual no decorrer do algoritmo e por um custo $O(n+k)$ na \emph{BFS}, respetivamente.
 
 A solução visada para a resolução dos problemas apresentados consiste em 2 etapas: ler a rede de fluxo de \emph{input} (\underline{1}) e computar o fluxo máximo com recurso ao algoritmo de \emph{Edmonds-Karp}(\underline{2}).
 
-Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(V - 2)}$ = O($V$) para o primeiro ciclo e O($\frac{(V-2)(V-3)}{2}$) = O($V^2$) para o segundo$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$.
+Para (\underline{1}) - leitura de \emph{input} - usando \texttt{scanf}, ler os dados de entrada dentro de dois ciclos ($n$ e $k$) a dependerem linearmente e quadraticamente de V para os custos entre os processos e os processadores e entre processos, respetivamente. Mais concretamente, $\Theta{(n)}$ para o primeiro ciclo e O($\frac{n(n-1)}{2}$) = O($n^2$) = O($k$) para o segundo$\footnote{Numa matriz N $\times$ N existem $\frac{N(N-1)}{2}$ entradas na matriz triangular superior (sem contar com a diagonal).}$.
 
-Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede residual – enquanto houver caminhos de aumento aplica-se a \emph{BFS}$\footnote{Na rede de fluxo do contexto do problema, \left|E\right|\gg{\left|V\right|}.}$, que corre em O($E$). É sabido que o número de iterações de \emph{Edmonds-Karp}, i.e., o número total de aumentos de fluxo é O($VE$) - existem O($E$) pares de vértices que, para um arco ($u$, $v$), ficam críticos O($V$) vezes, o que perfaz uma complexidade total de O($E$)\times O($EV$) = O($E^2V$). Contudo, mediante uma análise mais detalhada, notamos que o algoritmo de \emph{Edmonds-Karp} $\in{O(\left|f^{*}\right|E)}$ (e $\in{O(E^2V)}$), e de acordo com o enunciado $\left|f^{*}\right|$ $\in{O(V)}$, pelo que conseguimos apertar o limite assimptótico de (\underline{2}) para $O(\left|f^{*}\right|E)$ $\in{O(VE)}$. Concluímos assim que a solução geral dos problemas apresentados $\in{\textbf{O(VE)}}$.
+Para (\underline{2}) – aplicar o algoritmo de \emph{Edmonds-Karp} na rede residual – enquanto houver caminhos de aumento aplica-se a \emph{BFS}, que corre em O($E$) - O($n + k$) no contexto do problema. É sabido que o número de iterações de \emph{Edmonds-Karp}, i.e., o número total de aumentos de fluxo é O($VE$) - O($(n + 2)(2n + 2k)$) -, uma vez que existem O($E$) pares de vértices que, para um arco ($u$, $v$), ficam críticos O($V$) vezes, o que perfaz uma complexidade total de O($E$)\times O($EV$) = O($E^2V$). Isto correponde a $O(n+k)\times{O(n(n+k))}$ = O($n(n + k)^2$). Contudo, mediante uma análise mais detalhada, notamos que o algoritmo de \emph{Edmonds-Karp} $\in{O(\left|f^{*}\right|E)}$ (não invalidando que $\in{O(E^2V)}$), e de acordo com o enunciado $\left|f^{*}\right|$ $\in{O(V)}$, pelo que conseguimos apertar o limite assimptótico de (\underline{2}) para $O(\left|f^{*}\right|E)$ $\in{O(VE)}$. Concluímos assim que a solução geral dos problemas apresentados $\in{\textbf{O(VE)}}$, equivalente a O($n(n + k)$) considerando o input original do problema - (\underline{2}) domina (\underline{1}).
 
 \section{Avaliação Experimental dos Resultados}
 Para a devida análise do algoritmo implementado, utilizou-se um computador com processador \emph{AMD Ryzen 5 5600X 6-Core} a \SI{3,7}{GHz}, \SI{16}{GB} de memória RAM e sistema operativo \emph{Windows 10}.
@@ -55,30 +55,30 @@ Utilizou-se a ferramenta \texttt{gen2procs} fornecida pelo corpo docente para ge
 \begin{center}
 \begin{tikzpicture}[trim left = 0cm]
 \begin{axis}[
-    xmin = 0, xmax = 1.7E+9,
+    xmin = 0, xmax = 8E+8,
     ymin = 0, ymax = 1200,
-    xtick distance = 1E+9,
+    xtick distance = 4E+8,
     ytick distance = 250,
     grid = both,
     minor tick num = 1,
     major grid style = {lightgray},
     minor grid style = {lightgray!25},
     width = \textwidth,
-    height = 0.55\textwidth,
-    xlabel = {VE},
+    height = 0.5\textwidth,
+    xlabel = {$n(n + k)$},
     ylabel = {Tempo de execução (ms)},
     legend cell align = {left},
     legend pos = north west
 ]
 
-\addplot[blue, mark = *] table [x = {VE}, y = {T}] {\table};
+\addplot[blue, mark = *] table [x = {n(n+k)}, y = {T}] {\table};
 \legend{
-    VE com o tempo, 
+    $n(n + k)$ com o tempo, 
 }
 \end{axis}
 \end{tikzpicture}
 \end{center}
 
-Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear com $VE$ no eixo das abcissas, $x$, e o tempo (em ms) no eixo das ordenadas, $y$, que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - $\textbf{O(VE)}$.
+Por fim, registaram-se os valores obtidos da testagem e ajustou-se uma regressão linear com $n(n + k)$ no eixo das abcissas, $x$, e o tempo (em ms) no eixo das ordenadas, $y$, que demonstra, experimentalmente, a veracidade da complexidade do algoritmo esperada teoricamente - O($n(n + k)$).
 
 \end{document}
